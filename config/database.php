@@ -8,13 +8,14 @@ class Database {
     private $pdo = null;
 
     public function __construct() {
+        //create your own env file first and then use it
         $this->host = $_ENV['DB_HOST'] ?? 'localhost';
         $this->dbname = $_ENV['DB_NAME'] ?? 'my_blog';
         $this->username = $_ENV['DB_USER'] ?? 'root';
         $this->password = $_ENV['DB_PASS'] ?? '';
     }
 
-    // Singleton pattern - only one database connection
+    // Singleton pattern - only one database connection - reduce expensive connection overhead
     public static function getInstance() {
         if (self::$instance === null) {
             self::$instance = new self();
@@ -64,7 +65,7 @@ class Database {
     // Prevent cloning of singleton
     private function __clone() {}
     
-    // Prevent unserializing of singleton
-    private function __wakeup() {}
+    // Prevent unserializing of singleton. Public to prevent warnings in PHP 8.1+
+    public function __wakeup() {}
 }
 ?>

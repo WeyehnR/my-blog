@@ -2,6 +2,10 @@
 
 A demonstration of **Model-View-Controller (MVC)** architecture in PHP, built to showcase clean code organization and modern web development practices.
 
+I primarly work with javascript as the "modern" web development but it doesnt hurt to learn php as it wasnt too bad. Just had to learn syntaxtically
+
+![What I learn about PHP](https://miro.medium.com/v2/resize:fit:720/format:webp/0*uk1W9MPZP5gK-pVK.jpg)
+
 ## 🏗️ Project Structure
 
 ```
@@ -130,6 +134,9 @@ User Request → Router → Controller → Model → Database
 - **Reusability** - Models and views can be reused across different controllers
 
 ### Security Features
+
+This is how I imagine a SQL injection attack:
+![What I think of SQL injection attack like any smart 12 year old can do!](https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExa2RiYmoydmg1NDcxdjg0cXQxNXdsYnMzaXVmMHpjdWNmYjBvampwYSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/eCqFYAVjjDksg/giphy.gif)
 
 - **Protected application files** - Only `public/` folder is web-accessible
 - **PDO prepared statements** - Prevents SQL injection
