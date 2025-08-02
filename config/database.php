@@ -52,7 +52,7 @@ class Database {
             error_log("Database connection failed: " . $e->getMessage());
             
             // Generic error for users
-            throw new Exception("Unable to connect to database. Please try again later.");
+            throw new Exception("Unable to connect to database. Please try again later. :)");
         }
     }
 
