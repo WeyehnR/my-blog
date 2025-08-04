@@ -13,10 +13,11 @@ class User {
     
     // Find user by username or email
     public function findByUsername($username) {
-        $query = "SELECT * FROM {$this->table} WHERE username = :username OR email = :username LIMIT 1";
+        $query = "SELECT * FROM {$this->table} WHERE username = :username OR email = :email LIMIT 1";
         
         $stmt = $this->db->prepare($query);
         $stmt->bindParam(':username', $username);
+        $stmt->bindParam(':email', $username);
         $stmt->execute();
         
         return $stmt->fetch();

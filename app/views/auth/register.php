@@ -125,7 +125,7 @@
             </div>
         <?php endif; ?>
         
-        <form method="POST" action="?url=/my-blog/public/?url=register">
+        <form method="POST" action="/my-blog/public/?url=register">
             <div class="form-group">
                 <label for="username">Username</label>
                 <input type="text" 

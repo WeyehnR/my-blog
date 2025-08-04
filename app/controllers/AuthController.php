@@ -17,7 +17,6 @@ class AuthController {
             header('Location: /my-blog/public/');
             exit;
         }
-        
         require_once __DIR__ . '/../views/auth/login.php';
     }
     
@@ -28,7 +27,6 @@ class AuthController {
             header('Location: /my-blog/public/');
             exit;
         }
-        
         require_once __DIR__ . '/../views/auth/register.php';
     }
     

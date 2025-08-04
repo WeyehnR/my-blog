@@ -18,6 +18,13 @@
     <header>
         <h1>Welcome to My MVC Blog</h1>
         <p>Built with PHP MVC architecture for Big Voodoo Interactive</p>
+        <?php if (!isset($_SESSION['user_id'])): ?>
+            <a href="/my-blog/public/?url=login" style="margin-right: 10px;">Login</a>
+            <a href="/my-blog/public/?url=register">Register</a>
+        <?php else: ?>
+            <span>Welcome, <?= htmlspecialchars($_SESSION['username']) ?></span>
+            <a href="/my-blog/public/?url=logout" style="margin-left: 10px;">Logout</a>
+        <?php endif; ?>
     </header>
 
     <main>
