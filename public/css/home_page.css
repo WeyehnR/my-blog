@@ -1,32 +1,109 @@
 body {
+  background: #1a1a1b;
   font-family: Arial, sans-serif;
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
+  margin: 0;
+  padding: 0;
+  color: #d7dadc;
 }
-.post {
-  border: 1px solid #ddd;
-  margin: 20px 0;
-  padding: 15px;
-  border-radius: 5px;
-}
-.post h2 {
-  margin-top: 0;
-  color: #333;
-}
-.post-meta {
-  color: #666;
-  font-size: 0.9em;
-}
-a {
-  color: #0066cc;
-  text-decoration: none;
-}
-a:hover {
-  text-decoration: underline;
+.reddit-inspired-container {
+  max-width: 700px;
+  margin: 40px auto;
+  background: #1a1a1b;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  padding: 0 0 30px 0;
 }
 header {
-  border-bottom: 2px solid #333;
-  margin-bottom: 30px;
-  padding-bottom: 10px;
+  border-bottom: 1px solid #272729;
+  padding: 24px 32px 12px 32px;
+  background: #1a1a1b;
+  border-radius: 6px 6px 0 0;
+}
+header h1 {
+  margin: 0 0 8px 0;
+  font-size: 2rem;
+  color: #fff;
+}
+header p {
+  color: #818384;
+  margin-bottom: 10px;
+}
+.header-userbar {
+  float: right;
+  font-size: 1em;
+}
+.header-userbar span {
+  color: #fff;
+  font-weight: bold;
+}
+a {
+  color: #d7dadc;
+  text-decoration: none;
+  font-weight: bold;
+}
+a:hover {
+  color: #0079d3;
+  text-decoration: underline;
+}
+.post {
+  background: #272729;
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+  margin: 24px 32px 0 32px;
+  padding: 20px 24px;
+  border: 1px solid #343536;
+  position: relative;
+  transition: box-shadow 0.2s;
+}
+.post:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.22);
+}
+.post h2 {
+  margin: 0 0 8px 0;
+  color: #d7dadc;
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+.post-meta {
+  color: #818384;
+  font-size: 0.95em;
+  margin-bottom: 10px;
+}
+.post-meta .author {
+  color: #0079d3;
+  font-weight: bold;
+}
+.post p {
+  color: #d7dadc;
+  font-size: 1.08em;
+  margin-bottom: 10px;
+}
+.read-more {
+  color: #0079d3;
+  font-weight: bold;
+  font-size: 1em;
+}
+.create-post-btn {
+  display: inline-block;
+  background: #0079d3;
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 4px;
+  text-decoration: none;
+  margin-left: 20px;
+  font-size: 1em;
+  transition: background 0.2s;
+}
+.create-post-btn:hover {
+  background: #005999;
+}
+@media (max-width: 700px) {
+  .reddit-container,
+  .post,
+  header {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
 }
