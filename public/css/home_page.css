@@ -1,0 +1,32 @@
+body {
+  font-family: Arial, sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+.post {
+  border: 1px solid #ddd;
+  margin: 20px 0;
+  padding: 15px;
+  border-radius: 5px;
+}
+.post h2 {
+  margin-top: 0;
+  color: #333;
+}
+.post-meta {
+  color: #666;
+  font-size: 0.9em;
+}
+a {
+  color: #0066cc;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+header {
+  border-bottom: 2px solid #333;
+  margin-bottom: 30px;
+  padding-bottom: 10px;
+}

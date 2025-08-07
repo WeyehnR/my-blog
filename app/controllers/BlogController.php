@@ -37,27 +37,43 @@ class BlogController {
             echo "Error loading post: " . $e->getMessage();
         }
     }
-    
-    // Create new post (from form submission)
+
+    // Show create post form
+    public function create() {
+        // Only allow logged-in users
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: /my-blog/public/?url=login');
+            exit;
+        }
+        $errors = [];
+        require_once __DIR__ . '/../views/create_post.php';
+    }
+
+    // Handle create post submission
     public function store() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Simple validation
             $title = trim($_POST['title'] ?? '');
             $content = trim($_POST['content'] ?? '');
             $user_id = $_SESSION['user_id'] ?? null;
-            
-            if ($title && $content && $user_id) {
+            $errors = [];
+
+            if (!$title) $errors[] = 'Title is required';
+            if (!$content) $errors[] = 'Content is required';
+
+            if (empty($errors) && $user_id) {
                 $postId = $this->postModel->create($user_id, $title, $content);
-                
                 if ($postId) {
-                    header('Location: /post/' . $postId);
+                    header('Location: /my-blog/public/?url=post/' . $postId);
                     exit;
+                } else {
+                    $errors[] = 'Failed to create post.';
                 }
             }
-            
-            // If we get here, something went wrong
-            $_SESSION['error'] = 'Failed to create post';
-            header('Location: /');
+            // Show form with errors
+            require __DIR__ . '/../views/create_post.php';
+        } else {
+            header('Location: /my-blog/public/?url=create');
+            exit;
         }
     }
 }

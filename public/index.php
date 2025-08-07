@@ -54,6 +54,14 @@ if (empty($request) || $request === 'home') {
     // Handle logout
     $authController->logout();
     
+} elseif ($request === 'create') {
+    // Show create post form
+    $blogController->create();
+
+} elseif ($request === 'store') {
+    // Handle create post submission
+    $blogController->store();
+    
 } else {
     // 404 - Page not found
     http_response_code(404);
