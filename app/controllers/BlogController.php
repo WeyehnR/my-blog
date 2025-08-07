@@ -76,5 +76,33 @@ class BlogController {
             exit;
         }
     }
+
+    public function addComment($postId) {
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: /my-blog/public/?url=login');
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $author_name = $_SESSION['username'];
+            $comment = trim($_POST['comment'] ?? '');
+            $errors = [];
+
+            if (empty($comment)) {
+                $errors[] = 'Comment cannot be empty.';
+            }
+
+            if (empty($errors)) {
+                $this->postModel->addComment($postId, $author_name, $comment);
+                header('Location: /my-blog/public/?url=post/' . $postId);
+                exit;
+            }
+
+            // Reload post and comments for redisplay with errors
+            $post = $this->postModel->getPostById($postId);
+            $comments = $this->postModel->getPostComments($postId);
+            require __DIR__ . '/../views/post.php';
+        }
+    }
 }
 ?>

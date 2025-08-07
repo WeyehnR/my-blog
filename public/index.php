@@ -62,6 +62,10 @@ if (empty($request) || $request === 'home') {
     // Handle create post submission
     $blogController->store();
     
+} elseif ($parts[0] === 'comment' && isset($parts[1])) {
+    $postId = (int)$parts[1];
+    $blogController->addComment($postId);
+    
 } else {
     // 404 - Page not found
     http_response_code(404);

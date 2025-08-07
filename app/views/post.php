@@ -28,6 +28,32 @@
         <div class="content">
             <p><?= nl2br(htmlspecialchars($post['content'])) ?></p>
         </div>
+
+        <section class="comments">
+            <h2>Comments</h2>
+            <?php if (!empty($comments)): ?>
+                <?php foreach ($comments as $comment): ?>
+                    <div class="comment" style="margin-bottom:15px;">
+                        <strong><?= htmlspecialchars($comment['author_name']) ?></strong>
+                        <span style="color:#888; font-size:0.9em;">
+                            on <?= date('F j, Y H:i', strtotime($comment['created_at'])) ?>
+                        </span>
+                        <div><?= nl2br(htmlspecialchars($comment['comment'])) ?></div>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p>No comments yet.</p>
+            <?php endif; ?>
+
+            <?php if (isset($_SESSION['user_id'])): ?>
+                <form method="POST" action="/my-blog/public/?url=comment/<?= $post['id'] ?>" style="margin-top:20px;">
+                    <textarea name="comment" rows="3" required style="width:100%;padding:8px;" placeholder="Add your comment..."></textarea>
+                    <button type="submit" class="btn" style="margin-top:10px;">Post Comment</button>
+                </form>
+            <?php else: ?>
+                <p><a href="/my-blog/public/?url=login">Login</a> to comment.</p>
+            <?php endif; ?>
+        </section>
     </main>
 
     <footer class="back-link">
