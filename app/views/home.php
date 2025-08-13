@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My MVC Blog</title>
     <link rel="stylesheet" href="/my-blog/public/css/home_page.css">
+    <script src="/my-blog/public/js/voting.js" defer></script>
 </head>
 <body>
     <div class="reddit-inspired-container">
@@ -28,16 +29,16 @@
                 <p>No posts found.</p>
             <?php else: ?>
                 <?php foreach ($posts as $post): ?>
-                    <article class="post">
+                    <article class="post" id="post-<?= $post['id'] ?>">
                         <div class="post-votes">
-                            <a href="/my-blog/public/?url=vote/<?= $post['id'] ?>&type=up"
+                            <a href="#" class="vote-up" data-post-id="<?= $post['id'] ?>"
                                <?= ($post['userVote'] ?? '') === 'up' ? 'style="color:#0079d3;"' : '' ?>>
                                 <svg width="20" height="20" viewBox="0 0 32 32" fill="currentColor">
                                     <polygon points="16,8 24,24 8,24"/>
                                 </svg>
                             </a>
                             <div class="vote-score"><?= $post['score'] ?? 0 ?></div>
-                            <a href="/my-blog/public/?url=vote/<?= $post['id'] ?>&type=down"
+                            <a href="#" class="vote-down" data-post-id="<?= $post['id'] ?>"
                                <?= ($post['userVote'] ?? '') === 'down' ? 'style="color:#0079d3;"' : '' ?>>
                                 <svg width="20" height="20" viewBox="0 0 32 32" fill="currentColor" style="transform:rotate(180deg)">
                                     <polygon points="16,8 24,24 8,24"/>

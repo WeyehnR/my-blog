@@ -20,12 +20,16 @@ class Post {
         $this->db = Database::getInstance()->connect();
     }
     
-    // Get all posts with author info
+    // Get all posts with author info, ordered by vote score
     public function getAllPosts() {
-        $query = "SELECT p.*, u.username 
+        $query = "SELECT p.*, u.username,
+                  COALESCE(
+                    (SELECT SUM(CASE WHEN vote_type = 'up' THEN 1 ELSE -1 END) 
+                     FROM votes v WHERE v.post_id = p.id), 0
+                  ) as vote_score
                   FROM {$this->table} p 
                   LEFT JOIN users u ON p.user_id = u.id 
-                  ORDER BY p.created_at DESC";
+                  ORDER BY vote_score DESC, p.created_at DESC";
         
         $stmt = $this->db->prepare($query);
         $stmt->execute();

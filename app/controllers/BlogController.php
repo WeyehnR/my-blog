@@ -15,10 +15,9 @@ class BlogController {
         try {
             $posts = $this->postModel->getAllPosts();
             
-            // Get vote data for each post
+            // Get user vote data for each post (vote_score is now from SQL)
             foreach ($posts as &$post) {
-                $voteCount = $this->postModel->getVoteCount($post['id']);
-                $post['score'] = ($voteCount['upvotes'] ?? 0) - ($voteCount['downvotes'] ?? 0);
+                $post['score'] = $post['vote_score'] ?? 0; // Use SQL calculated score
                 $post['userVote'] = isset($_SESSION['user_id']) ? $this->postModel->getUserVote($post['id'], $_SESSION['user_id']) : null;
             }
             
@@ -128,6 +127,48 @@ class BlogController {
         $this->postModel->vote($post_id, $user_id, $type);
         header('Location: /my-blog/public/?url=post/' . $post_id);
         exit;
+    }
+
+    // AJAX vote endpoint
+    public function voteAjax() {
+        header('Content-Type: application/json');
+        
+        if (!isset($_SESSION['user_id'])) {
+            echo json_encode(['success' => false, 'redirect' => '/my-blog/public/?url=login']);
+            return;
+        }
+        
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode(['success' => false, 'error' => 'Invalid request method']);
+            return;
+        }
+        
+        $post_id = (int)($_POST['post_id'] ?? 0);
+        $type = $_POST['type'] ?? '';
+        $user_id = $_SESSION['user_id'];
+        
+        if (!$post_id || !in_array($type, ['up', 'down'])) {
+            echo json_encode(['success' => false, 'error' => 'Invalid parameters']);
+            return;
+        }
+        
+        try {
+            // Perform the vote
+            $this->postModel->vote($post_id, $user_id, $type);
+            
+            // Get updated vote data
+            $voteCount = $this->postModel->getVoteCount($post_id);
+            $score = ($voteCount['upvotes'] ?? 0) - ($voteCount['downvotes'] ?? 0);
+            $userVote = $this->postModel->getUserVote($post_id, $user_id);
+            
+            echo json_encode([
+                'success' => true,
+                'score' => $score,
+                'userVote' => $userVote
+            ]);
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'error' => 'Vote failed']);
+        }
     }
 }
 ?>

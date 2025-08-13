@@ -68,6 +68,9 @@ if (empty($request) || $request === 'home') {
     
 } elseif ($parts[0] === 'vote' && isset($parts[1]) && isset($_GET['type'])) {
     $blogController->vote((int)$parts[1], $_GET['type']);
+
+} elseif ($request === 'vote_ajax') {
+    $blogController->voteAjax();
     
 } else {
     // 404 - Page not found
