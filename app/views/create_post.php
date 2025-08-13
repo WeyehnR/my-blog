@@ -2,35 +2,48 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Post - My MVC Blog</title>
-    <link rel="stylesheet" href="/my-blog/public/css/home_page.css"> <!-- temporary style for now-->
+    <link rel="stylesheet" href="/my-blog/public/css/dark-theme.css">
 </head>
 <body>
     <header>
+        <div class="header-userbar">
+            <span>Welcome, <?= htmlspecialchars($_SESSION['username']) ?></span>
+            <a href="/my-blog/public/?url=logout">Logout</a>
+        </div>
         <h1>Create a New Post</h1>
-        <a href="/my-blog/public/?url=home">← Back to Home</a>
+        <p>Share your thoughts with the community</p>
     </header>
+    
     <main>
-        <?php if (!empty($errors)): ?>
-            <div class="error" style="color: #c33; margin-bottom: 20px;">
-                <ul>
-                    <?php foreach ($errors as $error): ?>
-                        <li><?= htmlspecialchars($error) ?></li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
-        <?php endif; ?>
-        <form method="POST" action="/my-blog/public/?url=store">
-            <div class="form-group">
-                <label for="title">Title</label>
-                <input type="text" name="title" id="title" value="<?= htmlspecialchars($_POST['title'] ?? '') ?>" required style="width:100%;padding:8px;">
-            </div>
-            <div class="form-group">
-                <label for="content">Content</label>
-                <textarea name="content" id="content" rows="8" required style="width:100%;padding:8px;"><?= htmlspecialchars($_POST['content'] ?? '') ?></textarea>
-            </div>
-            <button type="submit" class="btn" style="background:#007bff;color:#fff;padding:10px 20px;border:none;border-radius:4px;">Create Post</button>
-        </form>
+        <a href="/my-blog/public/?url=home" class="back-link">← Back to Home</a>
+        
+        <div class="container">
+            <?php if (!empty($errors)): ?>
+                <div class="error">
+                    <ul>
+                        <?php foreach ($errors as $error): ?>
+                            <li><?= htmlspecialchars($error) ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            <?php endif; ?>
+            
+            <form method="POST" action="/my-blog/public/?url=store">
+                <div class="form-group">
+                    <label for="title">Post Title</label>
+                    <input type="text" name="title" id="title" value="<?= htmlspecialchars($_POST['title'] ?? '') ?>" required placeholder="Enter an engaging title...">
+                </div>
+                
+                <div class="form-group">
+                    <label for="content">Content</label>
+                    <textarea name="content" id="content" rows="12" required placeholder="Share your story, thoughts, or insights..."><?= htmlspecialchars($_POST['content'] ?? '') ?></textarea>
+                </div>
+                
+                <button type="submit" class="btn">Create Post</button>
+            </form>
+        </div>
     </main>
 </body>
 </html>

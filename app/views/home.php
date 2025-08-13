@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My MVC Blog</title>
-    <link rel="stylesheet" href="/my-blog/public/css/home_page.css">
+    <link rel="stylesheet" href="/my-blog/public/css/dark-theme.css">
     <script src="/my-blog/public/js/voting.js" defer></script>
 </head>
 <body>
