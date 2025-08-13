@@ -14,6 +14,14 @@ class BlogController {
     public function index() {
         try {
             $posts = $this->postModel->getAllPosts();
+            
+            // Get vote data for each post
+            foreach ($posts as &$post) {
+                $voteCount = $this->postModel->getVoteCount($post['id']);
+                $post['score'] = ($voteCount['upvotes'] ?? 0) - ($voteCount['downvotes'] ?? 0);
+                $post['userVote'] = isset($_SESSION['user_id']) ? $this->postModel->getUserVote($post['id'], $_SESSION['user_id']) : null;
+            }
+            
             require_once __DIR__ . '/../views/home.php';
         } catch (Exception $e) {
             // Handle error
@@ -31,6 +39,11 @@ class BlogController {
                 header('Location: /');
                 exit;
             }
+            
+            // Get vote data for the view
+            $voteCount = $this->postModel->getVoteCount($id);
+            $score = ($voteCount['upvotes'] ?? 0) - ($voteCount['downvotes'] ?? 0);
+            $userVote = isset($_SESSION['user_id']) ? $this->postModel->getUserVote($id, $_SESSION['user_id']) : null;
             
             require_once __DIR__ . '/../views/post.php';
         } catch (Exception $e) {
@@ -103,6 +116,18 @@ class BlogController {
             $comments = $this->postModel->getPostComments($postId);
             require __DIR__ . '/../views/post.php';
         }
+    }
+
+    public function vote($post_id, $type) {
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: /my-blog/public/?url=login');
+            exit;
+        }
+        $user_id = $_SESSION['user_id'];
+        $type = ($type === 'up') ? 'up' : 'down';
+        $this->postModel->vote($post_id, $user_id, $type);
+        header('Location: /my-blog/public/?url=post/' . $post_id);
+        exit;
     }
 }
 ?>

@@ -126,4 +126,36 @@ class Post {
         
         return $stmt->execute();
     }
+
+    // Add or update a vote
+    public function vote($post_id, $user_id, $type) {
+        // Check if user already voted
+        $stmt = $this->db->prepare("SELECT * FROM votes WHERE post_id = :post_id AND user_id = :user_id");
+        $stmt->execute(['post_id' => $post_id, 'user_id' => $user_id]);
+        $existing = $stmt->fetch();
+
+        if ($existing) {
+            $stmt = $this->db->prepare("UPDATE votes SET vote_type = :type WHERE post_id = :post_id AND user_id = :user_id");
+        } else {
+            $stmt = $this->db->prepare("INSERT INTO votes (post_id, user_id, vote_type) VALUES (:post_id, :user_id, :type)");
+        }
+        return $stmt->execute(['post_id' => $post_id, 'user_id' => $user_id, 'type' => $type]);
+    }
+
+    // Get vote counts for a post
+    public function getVoteCount($post_id) {
+        $stmt = $this->db->prepare("SELECT 
+            SUM(vote_type = 'up') AS upvotes, 
+            SUM(vote_type = 'down') AS downvotes 
+            FROM votes WHERE post_id = :post_id");
+        $stmt->execute(['post_id' => $post_id]);
+        return $stmt->fetch();
+    }
+
+    // Get current user's vote for a post
+    public function getUserVote($post_id, $user_id) {
+        $stmt = $this->db->prepare("SELECT vote_type FROM votes WHERE post_id = :post_id AND user_id = :user_id");
+        $stmt->execute(['post_id' => $post_id, 'user_id' => $user_id]);
+        return $stmt->fetchColumn();
+    }
 }

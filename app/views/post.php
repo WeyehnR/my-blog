@@ -54,6 +54,22 @@
                 <p><a href="/my-blog/public/?url=login">Login</a> to comment.</p>
             <?php endif; ?>
         </section>
+
+        <div class="reddit-votes">
+            <a href="/my-blog/public/?url=vote/<?= $post['id'] ?>&type=up"
+               <?= $userVote === 'up' ? 'style="color:#0079d3;"' : '' ?>>
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="currentColor">
+                    <polygon points="16,8 24,24 8,24"/>
+                </svg>
+            </a>
+            <div class="score"><?= $score ?></div>
+            <a href="/my-blog/public/?url=vote/<?= $post['id'] ?>&type=down"
+               <?= $userVote === 'down' ? 'style="color:#0079d3;"' : '' ?>>
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="currentColor" style="transform:rotate(180deg)">
+                    <polygon points="16,8 24,24 8,24"/>
+                </svg>
+            </a>
+        </div>
     </main>
 
     <footer class="back-link">

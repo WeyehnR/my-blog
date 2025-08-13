@@ -29,15 +29,32 @@
             <?php else: ?>
                 <?php foreach ($posts as $post): ?>
                     <article class="post">
-                        <h2><a href="?url=post/<?= $post['id'] ?>"><?= htmlspecialchars($post['title']) ?></a></h2>
-                        <div class="post-meta">
-                            Posted on <?= date('F j, Y', strtotime($post['created_at'])) ?>
-                            <?php if (!empty($post['username'])): ?>
-                                by <span class="author"><?= htmlspecialchars($post['username']) ?></span>
-                            <?php endif; ?>
+                        <div class="post-votes">
+                            <a href="/my-blog/public/?url=vote/<?= $post['id'] ?>&type=up"
+                               <?= ($post['userVote'] ?? '') === 'up' ? 'style="color:#0079d3;"' : '' ?>>
+                                <svg width="20" height="20" viewBox="0 0 32 32" fill="currentColor">
+                                    <polygon points="16,8 24,24 8,24"/>
+                                </svg>
+                            </a>
+                            <div class="vote-score"><?= $post['score'] ?? 0 ?></div>
+                            <a href="/my-blog/public/?url=vote/<?= $post['id'] ?>&type=down"
+                               <?= ($post['userVote'] ?? '') === 'down' ? 'style="color:#0079d3;"' : '' ?>>
+                                <svg width="20" height="20" viewBox="0 0 32 32" fill="currentColor" style="transform:rotate(180deg)">
+                                    <polygon points="16,8 24,24 8,24"/>
+                                </svg>
+                            </a>
                         </div>
-                        <p><?= htmlspecialchars(substr($post['content'], 0, 150)) ?>...</p>
-                        <a class="read-more" href="?url=post/<?= $post['id'] ?>">Read more →</a>
+                        <div class="post-content">
+                            <h2><a href="?url=post/<?= $post['id'] ?>"><?= htmlspecialchars($post['title']) ?></a></h2>
+                            <div class="post-meta">
+                                Posted on <?= date('F j, Y', strtotime($post['created_at'])) ?>
+                                <?php if (!empty($post['username'])): ?>
+                                    by <span class="author"><?= htmlspecialchars($post['username']) ?></span>
+                                <?php endif; ?>
+                            </div>
+                            <p><?= htmlspecialchars(substr($post['content'], 0, 150)) ?>...</p>
+                            <a class="read-more" href="?url=post/<?= $post['id'] ?>">Read more →</a>
+                        </div>
                     </article>
                 <?php endforeach; ?>
             <?php endif; ?>

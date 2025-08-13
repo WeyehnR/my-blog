@@ -66,6 +66,9 @@ if (empty($request) || $request === 'home') {
     $postId = (int)$parts[1];
     $blogController->addComment($postId);
     
+} elseif ($parts[0] === 'vote' && isset($parts[1]) && isset($_GET['type'])) {
+    $blogController->vote((int)$parts[1], $_GET['type']);
+    
 } else {
     // 404 - Page not found
     http_response_code(404);

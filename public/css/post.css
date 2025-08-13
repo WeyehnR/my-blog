@@ -26,3 +26,28 @@ header {
   margin-bottom: 30px;
   padding-bottom: 10px;
 }
+.reddit-votes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px 0;
+}
+.reddit-votes a {
+  display: block;
+  margin: 4px 0;
+}
+.reddit-votes .score {
+  font-weight: bold;
+  color: #d7dadc;
+  margin: 6px 0;
+  font-size: 1.2em;
+}
+.reddit-votes svg {
+  width: 32px;
+  height: 32px;
+  fill: #818384;
+  transition: fill 0.2s;
+}
+.reddit-votes a[style*="color:#0079d3;"] svg {
+  fill: #0079d3;
+}
