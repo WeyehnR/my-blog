@@ -68,42 +68,6 @@ class Post {
         return false;
     }
     
-    // Update post
-    public function update($id, $title, $content) {
-        $query = "UPDATE {$this->table} 
-                  SET title = :title, content = :content 
-                  WHERE id = :id";
-        
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->bindParam(':title', $title, PDO::PARAM_STR);
-        $stmt->bindParam(':content', $content, PDO::PARAM_STR);
-        
-        return $stmt->execute();
-    }
-    
-    // Delete post
-    public function delete($id) {
-        $query = "DELETE FROM {$this->table} WHERE id = :id";
-        
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        
-        return $stmt->execute();
-    }
-    
-    // Get all posts by a specific user
-    public function getPostsByUser($user_id) {
-        $query = "SELECT * FROM {$this->table} 
-                  WHERE user_id = :user_id 
-                  ORDER BY created_at DESC";
-        
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-        $stmt->execute();
-        
-        return $stmt->fetchAll();
-    }
     
     // Get comments for a post
     public function getPostComments($post_id) {
@@ -161,5 +125,36 @@ class Post {
         $stmt = $this->db->prepare("SELECT vote_type FROM votes WHERE post_id = :post_id AND user_id = :user_id");
         $stmt->execute(['post_id' => $post_id, 'user_id' => $user_id]);
         return $stmt->fetchColumn();
+    }
+
+    public function getAllPostsWithUserVotes($userId = null) {
+        $query = "SELECT p.*, u.username,
+                COALESCE(
+                    (SELECT SUM(CASE WHEN vote_type = 'up' THEN 1 ELSE -1 END) 
+                    FROM votes v WHERE v.post_id = p.id), 0
+                ) as vote_score";
+        
+        // Add user vote if logged in
+        if ($userId) {
+            $query .= ", uv.vote_type as user_vote";
+        }
+        
+        $query .= " FROM {$this->table} p 
+                LEFT JOIN users u ON p.user_id = u.id";
+        
+        if ($userId) {
+            $query .= " LEFT JOIN votes uv ON uv.post_id = p.id AND uv.user_id = :user_id";
+        }
+        
+        $query .= " ORDER BY vote_score DESC, p.created_at DESC";
+        
+        $stmt = $this->db->prepare($query);
+        
+        if ($userId) {
+            $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+        }
+        
+        $stmt->execute();
+        return $stmt->fetchAll();
     }
 }

@@ -12,19 +12,38 @@ class BlogController {
     
     // Display all posts
     public function index() {
-        try {
-            $posts = $this->postModel->getAllPosts();
+         try {
+            $userId = $_SESSION['user_id'] ?? null;
+            $posts = $this->postModel->getAllPostsWithUserVotes($userId);
             
-            // Get user vote data for each post (vote_score is now from SQL)
+            // Process the posts data if needed
             foreach ($posts as &$post) {
-                $post['score'] = $post['vote_score'] ?? 0; // Use SQL calculated score
-                $post['userVote'] = isset($_SESSION['user_id']) ? $this->postModel->getUserVote($post['id'], $_SESSION['user_id']) : null;
+                $post['score'] = $post['vote_score'] ?? 0;
+                // userVote is now already included from the optimized query
+                $post['userVote'] = $post['user_vote'] ?? null;
             }
             
             require_once __DIR__ . '/../views/home.php';
+            
+        } catch (PDOException $e) {
+            // Database-specific error handling
+            error_log("Database error in BlogController::index(): " . $e->getMessage());
+            
+            if ($_ENV['APP_DEBUG'] ?? false) {
+                echo "Database error loading posts: " . $e->getMessage();
+            } else {
+                echo "Sorry, we're having trouble loading the posts right now. Please try again later.";
+            }
+            
         } catch (Exception $e) {
-            // Handle error
-            echo "Error loading posts: " . $e->getMessage();
+            // General error handling
+            error_log("General error in BlogController::index(): " . $e->getMessage());
+            
+            if ($_ENV['APP_DEBUG'] ?? false) {
+                echo "Error loading posts: " . $e->getMessage();
+            } else {
+                echo "Something went wrong. Please refresh the page.";
+            }
         }
     }
     
