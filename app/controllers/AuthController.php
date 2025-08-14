@@ -88,7 +88,7 @@ class AuthController {
                 'username' => trim($_POST['username'] ?? ''),
                 'email' => trim($_POST['email'] ?? ''),
                 'password' => $_POST['password'] ?? '',
-                'password_confirmation' => $_POST['confirm_password'] ?? '',
+                'password_confirmation' => $_POST['password_confirmation'] ?? '', // Fixed: changed from confirm_password
             ];
             
             $rules = [

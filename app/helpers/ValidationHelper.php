@@ -44,11 +44,24 @@ class ValidationHelper {
                 return !preg_match('/^[a-zA-Z0-9_]+$/', $value) ? "{$fieldName} can only contain letters, numbers and underscores" : null;
                 
             case 'confirmed':
-                $confirmField = $field . '_confirmation';
-                return $value !== ($allData[$confirmField] ?? '') ? "{$fieldName} confirmation does not match" : null;
+                // Fix: Handle both password and password_confirmation fields correctly
+                if ($field === 'password') {
+                    $confirmField = 'password_confirmation';
+                    $confirmValue = $allData[$confirmField] ?? '';
+                    return $value !== $confirmValue ? "Password confirmation does not match" : null;
+                } elseif ($field === 'password_confirmation') {
+                    $originalField = 'password';
+                    $originalValue = $allData[$originalField] ?? '';
+                    return $value !== $originalValue ? "Password confirmation does not match" : null;
+                } else {
+                    // For other fields, use the original logic
+                    $confirmField = $field . '_confirmation';
+                    return $value !== ($allData[$confirmField] ?? '') ? "{$fieldName} confirmation does not match" : null;
+                }
                 
             default:
                 return null;
         }
     }
 }
+?>

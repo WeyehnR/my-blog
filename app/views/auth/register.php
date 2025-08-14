@@ -1,3 +1,7 @@
+<?php
+// Include the FormHelper
+require_once __DIR__ . '/../../helpers/FormHelper.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,23 +14,23 @@
     <div class="container">
         <h1>Create Account</h1>
         
-        <?php if (!empty($errors)): ?>
-            <div class="error">
-                <ul>
-                    <?php foreach ($errors as $error): ?>
-                        <li><?php echo htmlspecialchars($error); ?></li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
-        <?php endif; ?>
+        <?php 
+        // Display errors using FormHelper
+        echo FormHelper::displayErrors($errors ?? []);
+        ?>
         
         <form method="POST" action="/my-blog/public/?url=register">
+            <?php 
+            // Add CSRF protection (optional for now as you mentioned)
+            // echo FormHelper::csrfToken(); 
+            ?>
+            
             <div class="form-group">
                 <label for="username">Username</label>
                 <input type="text" 
                        id="username" 
                        name="username" 
-                       value="<?php echo htmlspecialchars($_POST['username'] ?? ''); ?>"
+                       value="<?php echo FormHelper::oldValue('username'); ?>"
                        required>
                 <p class="hint">Letters, numbers and underscores only. Min 3 characters.</p>
             </div>
@@ -36,7 +40,7 @@
                 <input type="email" 
                        id="email" 
                        name="email" 
-                       value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>"
+                       value="<?php echo FormHelper::oldValue('email'); ?>"
                        required>
             </div>
             
@@ -50,10 +54,10 @@
             </div>
             
             <div class="form-group">
-                <label for="confirm_password">Confirm Password</label>
+                <label for="password_confirmation">Confirm Password</label>
                 <input type="password" 
-                       id="confirm_password" 
-                       name="confirm_password" 
+                       id="password_confirmation" 
+                       name="password_confirmation" 
                        required>
             </div>
             
