@@ -83,25 +83,42 @@ class BlogController {
     // Handle create post submission
     public function store() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $title = trim($_POST['title'] ?? '');
-            $content = trim($_POST['content'] ?? '');
-            $user_id = $_SESSION['user_id'] ?? null;
-            $errors = [];
+            try {
+                $title = trim($_POST['title'] ?? '');
+                $content = trim($_POST['content'] ?? '');
+                $user_id = $_SESSION['user_id'] ?? null;
+                $errors = [];
 
-            if (!$title) $errors[] = 'Title is required';
-            if (!$content) $errors[] = 'Content is required';
+                // Validation
+                if (!$title) $errors[] = 'Title is required';
+                if (!$content) $errors[] = 'Content is required';
+                if (!$user_id) $errors[] = 'You must be logged in to create a post';
 
-            if (empty($errors) && $user_id) {
-                $postId = $this->postModel->create($user_id, $title, $content);
-                if ($postId) {
-                    header('Location: /my-blog/public/?url=post/' . $postId);
-                    exit;
-                } else {
-                    $errors[] = 'Failed to create post.';
+                if (empty($errors)) {
+                    $postId = $this->postModel->create($user_id, $title, $content);
+                    if ($postId) {
+                        header('Location: /my-blog/public/?url=post/' . $postId);
+                        exit;
+                    } else {
+                        $errors[] = 'Failed to create post.';
+                    }
                 }
+                
+                // Show form with errors
+                require __DIR__ . '/../views/create_post.php';
+                
+            } catch (PDOException $e) {
+                // Database-specific error handling
+                error_log("Database error in BlogController::store(): " . $e->getMessage());
+                $errors[] = 'Database error occurred. Please try again.';
+                require __DIR__ . '/../views/create_post.php';
+                
+            } catch (Exception $e) {
+                // General error handling
+                error_log("General error in BlogController::store(): " . $e->getMessage());
+                $errors[] = 'An unexpected error occurred. Please try again.';
+                require __DIR__ . '/../views/create_post.php';
             }
-            // Show form with errors
-            require __DIR__ . '/../views/create_post.php';
         } else {
             header('Location: /my-blog/public/?url=create');
             exit;
@@ -115,24 +132,63 @@ class BlogController {
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $author_name = $_SESSION['username'];
-            $comment = trim($_POST['comment'] ?? '');
-            $errors = [];
+            try {
+                $author_name = $_SESSION['username'];
+                $comment = trim($_POST['comment'] ?? '');
+                $errors = [];
 
-            if (empty($comment)) {
-                $errors[] = 'Comment cannot be empty.';
+                // Validation
+                if (empty($comment)) {
+                    $errors[] = 'Comment cannot be empty.';
+                }
+                
+                if (empty($author_name)) {
+                    $errors[] = 'Author name is required.';
+                }
+
+                if (empty($errors)) {
+                    $this->postModel->addComment($postId, $author_name, $comment);
+                    header('Location: /my-blog/public/?url=post/' . $postId);
+                    exit;
+                }
+
+                // Reload post and comments for redisplay with errors
+                $post = $this->postModel->getPostById($postId);
+                $comments = $this->postModel->getPostComments($postId);
+                require __DIR__ . '/../views/post.php';
+                
+            } catch (PDOException $e) {
+                // Database-specific error handling
+                error_log("Database error in BlogController::addComment(): " . $e->getMessage());
+                
+                // Load post data for error display
+                try {
+                    $post = $this->postModel->getPostById($postId);
+                    $comments = $this->postModel->getPostComments($postId);
+                    $errors[] = 'Failed to add comment due to database error.';
+                    require __DIR__ . '/../views/post.php';
+                } catch (Exception $innerE) {
+                    // If we can't even load the post, redirect to home
+                    header('Location: /my-blog/public/');
+                    exit;
+                }
+                
+            } catch (Exception $e) {
+                // General error handling
+                error_log("General error in BlogController::addComment(): " . $e->getMessage());
+                
+                // Load post data for error display
+                try {
+                    $post = $this->postModel->getPostById($postId);
+                    $comments = $this->postModel->getPostComments($postId);
+                    $errors[] = 'An unexpected error occurred while adding comment.';
+                    require __DIR__ . '/../views/post.php';
+                } catch (Exception $innerE) {
+                    // If we can't even load the post, redirect to home
+                    header('Location: /my-blog/public/');
+                    exit;
+                }
             }
-
-            if (empty($errors)) {
-                $this->postModel->addComment($postId, $author_name, $comment);
-                header('Location: /my-blog/public/?url=post/' . $postId);
-                exit;
-            }
-
-            // Reload post and comments for redisplay with errors
-            $post = $this->postModel->getPostById($postId);
-            $comments = $this->postModel->getPostComments($postId);
-            require __DIR__ . '/../views/post.php';
         }
     }
 
