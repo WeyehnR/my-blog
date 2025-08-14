@@ -98,16 +98,43 @@ class Post {
     // Add or update a vote
     public function vote($post_id, $user_id, $type) {
         // Check if user already voted
-        $stmt = $this->db->prepare("SELECT * FROM votes WHERE post_id = :post_id AND user_id = :user_id");
+        $stmt = $this->db->prepare("SELECT vote_type FROM votes WHERE post_id = :post_id AND user_id = :user_id");
         $stmt->execute(['post_id' => $post_id, 'user_id' => $user_id]);
-        $existing = $stmt->fetch();
+        $existing = $stmt->fetchColumn();
 
         if ($existing) {
-            $stmt = $this->db->prepare("UPDATE votes SET vote_type = :type WHERE post_id = :post_id AND user_id = :user_id");
+            if ($existing === $type) {
+                // User clicked the same vote type - remove the vote (toggle off)
+                $stmt = $this->db->prepare("DELETE FROM votes WHERE post_id = :post_id AND user_id = :user_id");
+                return $stmt->execute(['post_id' => $post_id, 'user_id' => $user_id]);
+            } else {
+                // User clicked different vote type - this is where we check for your edge case
+                // Check if this user's existing vote makes up the entire score (single-user post)
+                $voteCount = $this->getVoteCount($post_id);
+                $currentScore = ($voteCount['upvotes'] ?? 0) - ($voteCount['downvotes'] ?? 0);
+                $totalVotes = ($voteCount['upvotes'] ?? 0) + ($voteCount['downvotes'] ?? 0);
+                
+                if ($totalVotes == 1 && (($currentScore == 1 && $existing == 'up' && $type == 'down') || 
+                                        ($currentScore == -1 && $existing == 'down' && $type == 'up'))) {
+                    // Special edge case: Only one vote exists (by this user), and they're switching to opposite
+                    // This should jump directly from 1 to -1 or -1 to 1
+                    $stmt = $this->db->prepare("UPDATE votes SET vote_type = :type WHERE post_id = :post_id AND user_id = :user_id");
+                    return $stmt->execute(['post_id' => $post_id, 'user_id' => $user_id, 'type' => $type]);
+                } else if ($totalVotes > 1) {
+                    // Multiple users have voted - normal behavior (no double voting prevention)
+                    $stmt = $this->db->prepare("UPDATE votes SET vote_type = :type WHERE post_id = :post_id AND user_id = :user_id");
+                    return $stmt->execute(['post_id' => $post_id, 'user_id' => $user_id, 'type' => $type]);
+                } else {
+                    // Regular case: update the vote
+                    $stmt = $this->db->prepare("UPDATE votes SET vote_type = :type WHERE post_id = :post_id AND user_id = :user_id");
+                    return $stmt->execute(['post_id' => $post_id, 'user_id' => $user_id, 'type' => $type]);
+                }
+            }
         } else {
+            // No existing vote - insert new vote
             $stmt = $this->db->prepare("INSERT INTO votes (post_id, user_id, vote_type) VALUES (:post_id, :user_id, :type)");
+            return $stmt->execute(['post_id' => $post_id, 'user_id' => $user_id, 'type' => $type]);
         }
-        return $stmt->execute(['post_id' => $post_id, 'user_id' => $user_id, 'type' => $type]);
     }
 
     // Get vote counts for a post

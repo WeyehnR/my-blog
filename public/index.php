@@ -39,6 +39,11 @@ try {
         // Homepage - show all posts
         $blogController->index();
         
+    } elseif ($parts[0] === 'post' && isset($parts[1]) && isset($parts[2]) && $parts[2] === 'comment') {
+        // Handle post comment submission: post/{id}/comment (MUST come before general post route)
+        $postId = (int)$parts[1];
+        $blogController->addComment($postId);
+        
     } elseif ($parts[0] === 'post' && isset($parts[1])) {
         // Single post page
         $id = (int)$parts[1];
@@ -76,8 +81,15 @@ try {
         $postId = (int)$parts[1];
         $blogController->addComment($postId);
         
-    } elseif ($parts[0] === 'vote' && isset($parts[1]) && isset($_GET['type'])) {
-        $blogController->vote((int)$parts[1], $_GET['type']);
+    } elseif ($request === 'vote') {
+        // Handle voting via POST
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['post_id']) && isset($_POST['vote_type'])) {
+            $blogController->vote((int)$_POST['post_id'], $_POST['vote_type']);
+        } else {
+            // Invalid vote request
+            header('Location: ' . UrlHelper::url('home'));
+            exit;
+        }
 
     } elseif ($request === 'vote_ajax') {
         $blogController->voteAjax();

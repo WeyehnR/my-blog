@@ -1,73 +1,59 @@
 <?php
-// Include the FormHelper
+// Include the helpers
 require_once __DIR__ . '/../../helpers/FormHelper.php';
+require_once __DIR__ . '/../../helpers/UrlHelper.php';
+require_once __DIR__ . '/../partials/header.php';
+
+renderHeader('Create Account');
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - My MVC Blog</title>
-    <link rel="stylesheet" href="/my-blog/public/css/dark-theme.css">
-</head>
-<body>
-    <div class="container">
-        <h1>Create Account</h1>
-        
-        <?php 
-        // Display errors using FormHelper
-        echo FormHelper::displayErrors($errors ?? []);
-        ?>
-        
-        <form method="POST" action="/my-blog/public/?url=register">
-            <?php 
-            // Add CSRF protection (optional for now as you mentioned)
-            // echo FormHelper::csrfToken(); 
-            ?>
-            
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" 
-                       id="username" 
-                       name="username" 
-                       value="<?php echo FormHelper::oldValue('username'); ?>"
-                       required>
-                <p class="hint">Letters, numbers and underscores only. Min 3 characters.</p>
-            </div>
-            
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" 
-                       id="email" 
-                       name="email" 
-                       value="<?php echo FormHelper::oldValue('email'); ?>"
-                       required>
-            </div>
-            
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" 
-                       id="password" 
-                       name="password" 
-                       required>
-                <p class="hint">Minimum 6 characters</p>
-            </div>
-            
-            <div class="form-group">
-                <label for="password_confirmation">Confirm Password</label>
-                <input type="password" 
-                       id="password_confirmation" 
-                       name="password_confirmation" 
-                       required>
-            </div>
-            
-            <button type="submit" class="btn">Create Account</button>
-        </form>
-        
-        <div class="links">
-            <p>Already have an account? <a href="/my-blog/public/?url=login">Login here</a></p>
-            <p><a href="/my-blog/public/" class="back-link">← Back to Home</a></p>
+
+<div class="container">
+    <?php echo FormHelper::displayErrors($errors ?? []); ?>
+    
+    <form method="POST" action="<?php echo UrlHelper::url('register'); ?>">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" 
+                   id="username" 
+                   name="username" 
+                   value="<?php echo FormHelper::oldValue('username'); ?>"
+                   required>
+            <p class="hint">Letters, numbers and underscores only. Min 3 characters.</p>
         </div>
+        
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" 
+                   id="email" 
+                   name="email" 
+                   value="<?php echo FormHelper::oldValue('email'); ?>"
+                   required>
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" 
+                   id="password" 
+                   name="password" 
+                   required>
+            <p class="hint">Minimum 6 characters</p>
+        </div>
+        
+        <div class="form-group">
+            <label for="password_confirmation">Confirm Password</label>
+            <input type="password" 
+                   id="password_confirmation" 
+                   name="password_confirmation" 
+                   required>
+        </div>
+        
+        <button type="submit" class="btn">Create Account</button>
+    </form>
+    
+    <div class="links">
+        <p>Already have an account? <a href="<?php echo UrlHelper::url('login'); ?>">Login here</a></p>
+        <p><a href="<?php echo UrlHelper::url(''); ?>" class="back-link">← Back to Home</a></p>
     </div>
-</body>
-</html>
+</div>
+
+<?php renderFooter(); ?>

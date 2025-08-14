@@ -60,8 +60,8 @@ class BlogController {
             
             // Get vote data for the view
             $voteCount = $this->postModel->getVoteCount($id);
-            $score = ($voteCount['upvotes'] ?? 0) - ($voteCount['downvotes'] ?? 0);
-            $userVote = isset($_SESSION['user_id']) ? $this->postModel->getUserVote($id, $_SESSION['user_id']) : null;
+            $post['vote_score'] = ($voteCount['upvotes'] ?? 0) - ($voteCount['downvotes'] ?? 0);
+            $post['userVote'] = isset($_SESSION['user_id']) ? $this->postModel->getUserVote($id, $_SESSION['user_id']) : null;
             
             require_once __DIR__ . '/../views/post.php';
         } catch (Exception $e) {
@@ -147,14 +147,25 @@ class BlogController {
                 }
 
                 if (empty($errors)) {
-                    $this->postModel->addComment($postId, $author_name, $comment);
-                    header('Location: /my-blog/public/?url=post/' . $postId);
-                    exit;
-                }
+                    $result = $this->postModel->addComment($postId, $author_name, $comment);
+                    
+                    if ($result) {
+                        header('Location: /my-blog/public/?url=post/' . $postId);
+                        exit;
+                    } else {
+                        $errors[] = 'Failed to add comment.';
+                    }
+                } 
 
-                // Reload post and comments for redisplay with errors
+                // If there are errors, reload post and comments for redisplay
                 $post = $this->postModel->getPostById($postId);
                 $comments = $this->postModel->getPostComments($postId);
+                
+                // Get vote data for the view
+                $voteCount = $this->postModel->getVoteCount($postId);
+                $post['vote_score'] = ($voteCount['upvotes'] ?? 0) - ($voteCount['downvotes'] ?? 0);
+                $post['userVote'] = isset($_SESSION['user_id']) ? $this->postModel->getUserVote($postId, $_SESSION['user_id']) : null;
+                
                 require __DIR__ . '/../views/post.php';
                 
             } catch (PDOException $e) {
@@ -197,11 +208,21 @@ class BlogController {
             header('Location: /my-blog/public/?url=login');
             exit;
         }
+        
         $user_id = $_SESSION['user_id'];
         $type = ($type === 'up') ? 'up' : 'down';
-        $this->postModel->vote($post_id, $user_id, $type);
-        header('Location: /my-blog/public/?url=post/' . $post_id);
-        exit;
+        
+        try {
+            $this->postModel->vote($post_id, $user_id, $type);
+            // Redirect back to home page
+            header('Location: /my-blog/public/');
+            exit;
+        } catch (Exception $e) {
+            error_log("Vote error: " . $e->getMessage());
+            // Redirect back to home page even on error
+            header('Location: /my-blog/public/');
+            exit;
+        }
     }
 
     // AJAX vote endpoint
@@ -219,7 +240,7 @@ class BlogController {
         }
         
         $post_id = (int)($_POST['post_id'] ?? 0);
-        $type = $_POST['type'] ?? '';
+        $type = $_POST['vote_type'] ?? '';
         $user_id = $_SESSION['user_id'];
         
         if (!$post_id || !in_array($type, ['up', 'down'])) {

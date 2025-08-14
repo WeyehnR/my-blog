@@ -1,49 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Post - My MVC Blog</title>
-    <link rel="stylesheet" href="/my-blog/public/css/dark-theme.css">
-</head>
-<body>
-    <header>
-        <div class="header-userbar">
-            <span>Welcome, <?= htmlspecialchars($_SESSION['username']) ?></span>
-            <a href="/my-blog/public/?url=logout">Logout</a>
-        </div>
-        <h1>Create a New Post</h1>
-        <p>Share your thoughts with the community</p>
-    </header>
+<?php
+require_once __DIR__ . '/../helpers/FormHelper.php';
+require_once __DIR__ . '/../helpers/UrlHelper.php';
+require_once __DIR__ . '/partials/header.php';
+
+renderHeader('Create New Post');
+?>
+
+<div class="container">
+    <!-- User bar -->
+    <div class="user-bar">
+        <?php if (isset($_SESSION['user_id'])): ?>
+            <span>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</span>
+            <a href="<?php echo UrlHelper::url('logout'); ?>" class="logout-btn">Logout</a>
+        <?php else: ?>
+            <a href="<?php echo UrlHelper::url('login'); ?>">Login</a> |
+            <a href="<?php echo UrlHelper::url('register'); ?>">Register</a>
+        <?php endif; ?>
+    </div>
+
+    <h1>Create New Post</h1>
     
-    <main>
-        <a href="/my-blog/public/?url=home" class="back-link">← Back to Home</a>
-        
-        <div class="container">
-            <?php if (!empty($errors)): ?>
-                <div class="error">
-                    <ul>
-                        <?php foreach ($errors as $error): ?>
-                            <li><?= htmlspecialchars($error) ?></li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
-            <?php endif; ?>
-            
-            <form method="POST" action="/my-blog/public/?url=store">
-                <div class="form-group">
-                    <label for="title">Post Title</label>
-                    <input type="text" name="title" id="title" value="<?= htmlspecialchars($_POST['title'] ?? '') ?>" required placeholder="Enter an engaging title...">
-                </div>
-                
-                <div class="form-group">
-                    <label for="content">Content</label>
-                    <textarea name="content" id="content" rows="12" required placeholder="Share your story, thoughts, or insights..."><?= htmlspecialchars($_POST['content'] ?? '') ?></textarea>
-                </div>
-                
-                <button type="submit" class="btn">Create Post</button>
-            </form>
+    <?php echo FormHelper::displayErrors($errors ?? []); ?>
+    
+    <form method="POST" action="<?php echo UrlHelper::url('store'); ?>">
+        <div class="form-group">
+            <label for="title">Post Title</label>
+            <input type="text" 
+                   id="title" 
+                   name="title" 
+                   value="<?php echo FormHelper::oldValue('title'); ?>"
+                   required>
         </div>
-    </main>
-</body>
-</html>
+        
+        <div class="form-group">
+            <label for="content">Post Content</label>
+            <textarea id="content" 
+                     name="content" 
+                     rows="8" 
+                     required><?php echo FormHelper::oldValue('content'); ?></textarea>
+        </div>
+        
+        <button type="submit" class="btn">Create Post</button>
+    </form>
+    
+    <div class="links">
+        <p><a href="<?php echo UrlHelper::url(''); ?>" class="back-link">← Back to Home</a></p>
+    </div>
+</div>
+
+<?php renderFooter(); ?>
