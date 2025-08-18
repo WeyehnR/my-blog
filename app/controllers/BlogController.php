@@ -159,7 +159,7 @@ class BlogController {
 
                 // If there are errors, reload post and comments for redisplay
                 $post = $this->postModel->getPostById($postId);
-                $comments = $this->postModel->getPostComments($postId);
+        
                 
                 // Get vote data for the view
                 $voteCount = $this->postModel->getVoteCount($postId);
@@ -175,7 +175,6 @@ class BlogController {
                 // Load post data for error display
                 try {
                     $post = $this->postModel->getPostById($postId);
-                    $comments = $this->postModel->getPostComments($postId);
                     $errors[] = 'Failed to add comment due to database error.';
                     require __DIR__ . '/../views/post.php';
                 } catch (Exception $innerE) {
