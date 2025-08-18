@@ -16,14 +16,6 @@ class BlogController {
             $userId = $_SESSION['user_id'] ?? null;
             $posts = $this->postModel->getAllPostsWithUserVotes($userId);
             
-            // Debug output
-            echo "<div style='background:red; color:white; padding:10px; margin:10px;'>DEBUG: Found " . count($posts) . " posts</div>";
-            echo "<pre style='background:#333; color:white; padding:10px; margin:10px;'>";
-            foreach ($posts as $i => $post) {
-                echo "Post $i: ID=" . $post['id'] . ", Title=" . $post['title'] . ", User=" . $post['username'] . "\n";
-            }
-            echo "</pre>";
-            
             // Process the posts data if needed
             foreach ($posts as $key => $post) {
                 $posts[$key]['score'] = $post['vote_score'] ?? 0;
