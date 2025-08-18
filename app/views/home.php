@@ -15,7 +15,12 @@ renderHeader('My Blog Posts', isset($_SESSION['user_id']), true);
 
     <div class="posts">
         <?php if (!empty($posts)): ?>
-            <?php foreach ($posts as $post): ?>
+            <?php foreach ($posts as $index => $post): ?>
+                <!-- Debug output for each post -->
+                <div style="background:yellow; color:black; padding:5px; margin:5px;">
+                    POST DEBUG #<?php echo $index; ?>: ID=<?php echo $post['id']; ?>, Title="<?php echo $post['title']; ?>", User="<?php echo $post['username']; ?>"
+                </div>
+                
                 <div class="post-card" id="post-<?php echo $post['id']; ?>">
                     <div class="vote-section">
                         <?php if (isset($_SESSION['user_id'])): ?>
