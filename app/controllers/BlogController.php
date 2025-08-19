@@ -186,11 +186,9 @@ class BlogController {
             } catch (Exception $e) {
                 // General error handling
                 error_log("General error in BlogController::addComment(): " . $e->getMessage());
-                
                 // Load post data for error display
                 try {
                     $post = $this->postModel->getPostById($postId);
-                    $comments = $this->postModel->getPostComments($postId);
                     $errors[] = 'An unexpected error occurred while adding comment.';
                     require __DIR__ . '/../views/post.php';
                 } catch (Exception $innerE) {
