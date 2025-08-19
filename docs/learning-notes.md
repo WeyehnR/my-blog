@@ -584,7 +584,7 @@ foreach ($array as &$value) {
 
 #### Comments System
 
-- Nested comment display
+- Nested comment display (not yet beyound this point something to implement if I want to add more features)
 - User attribution
 - Real-time comment posting
 - Proper data sanitization
