@@ -3,7 +3,7 @@ require_once __DIR__ . '/partials/header.php';
 require_once __DIR__ . '/../helpers/UrlHelper.php';
 
 // Render header with create button for logged in users
-renderHeader('My Blog Posts', isset($_SESSION['user_id']), true);
+renderHeader('Mini Reddit Clone', isset($_SESSION['user_id']), true);
 ?>
 
 <div class="container">
