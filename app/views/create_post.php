@@ -18,7 +18,6 @@ renderHeader('Create New Post');
         <?php endif; ?>
     </div>
 
-    <h1>Create New Post</h1>
     
     <?php echo FormHelper::displayErrors($errors ?? []); ?>
     
@@ -40,7 +39,7 @@ renderHeader('Create New Post');
                      required><?php echo FormHelper::oldValue('content'); ?></textarea>
         </div>
         
-        <button type="submit" class="btn">Create Post</button>
+        <button type="submit" class="btn">Submit Post</button>
     </form>
     
     <div class="links">

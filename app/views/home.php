@@ -7,12 +7,7 @@ renderHeader('My Blog Posts', isset($_SESSION['user_id']), true);
 ?>
 
 <div class="container">
-    <?php if (isset($_SESSION['user_id'])): ?>
-        <div class="create-post-section">
-            <a href="<?php echo UrlHelper::url('create'); ?>" class="btn">Create New Post</a>
-        </div>
-    <?php endif; ?>
-
+    
     <div class="posts">
         <?php if (!empty($posts)): ?>
             <?php foreach ($posts as $post): ?>
