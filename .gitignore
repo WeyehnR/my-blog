@@ -3,6 +3,9 @@
 .env.local
 .env.development
 .env.production
+.env.hostinger
+.env.example
+*.env
 
 # XAMPP/Development
 .DS_Store
@@ -17,6 +20,7 @@ Thumbs.db
 # Logs
 *.log
 error_log
+logs/
 
 # Temporary files
 *.tmp
@@ -44,3 +48,22 @@ composer.lock
 # User uploads 
 uploads/
 storage/
+
+# Deployment and hosting specific files
+hostinger-upload/
+*.htaccess
+.htaccess
+
+# Deployment preparation files
+deploy-prepare.php
+prepare-hostinger.php
+*.zip
+
+# Hosting documentation (optional - you might want to keep these)
+HOSTINGER-*.md
+DEPLOYMENT-*.md
+HOSTING-GUIDE.md
+
+# Server specific files
+.user.ini
+php.ini

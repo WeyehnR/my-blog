@@ -336,7 +336,6 @@ my-blog/
 │   └── views/             # HTML templates
 ├── config/                # Configuration files
 │   ├── database.php       # DB connection settings
-│   └── env.php           # Environment config
 ├── public/                # Web-accessible files only
 │   ├── css/              # Stylesheets
 │   ├── js/               # JavaScript

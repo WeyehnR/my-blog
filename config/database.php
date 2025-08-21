@@ -8,11 +8,27 @@ class Database {
     private $pdo = null;
 
     public function __construct() {
-        //create your own env file first and then use it
+        // Load environment variables
+        $this->loadEnvironment();
+        
         $this->host = $_ENV['DB_HOST'] ?? 'localhost';
         $this->dbname = $_ENV['DB_NAME'] ?? 'my_blog';
         $this->username = $_ENV['DB_USER'] ?? 'root';
         $this->password = $_ENV['DB_PASS'] ?? '';
+    }
+    
+    private function loadEnvironment() {
+        $envFile = __DIR__ . '/../.env';
+        if (file_exists($envFile)) {
+            $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            foreach ($lines as $line) {
+                if (strpos($line, '#') === 0) continue; // Skip comments
+                if (strpos($line, '=') !== false) {
+                    list($key, $value) = explode('=', $line, 2);
+                    $_ENV[trim($key)] = trim($value);
+                }
+            }
+        }
     }
 
     // Singleton pattern - only one database connection - reduce expensive connection overhead

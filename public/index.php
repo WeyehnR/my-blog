@@ -1,15 +1,25 @@
 <?php
 // public/index.php
 
-// Enable error reporting for development
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// Load environment configuration first
+require_once __DIR__ . '/../config/database.php';
+
+// Configure error reporting based on environment
+$appEnv = $_ENV['APP_ENV'] ?? 'development';
+if ($appEnv === 'production') {
+    // Production: Log errors, don't display them
+    error_reporting(E_ALL);
+    ini_set('display_errors', 0);
+    ini_set('log_errors', 1);
+    ini_set('error_log', __DIR__ . '/../logs/error.log');
+} else {
+    // Development: Show all errors
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+}
 
 // Start session for authentication
 session_start();
-
-// Include configuration and database
-require_once __DIR__ . '/../config/database.php';
 
 // Include helpers first
 require_once __DIR__ . '/../app/helpers/UrlHelper.php';
