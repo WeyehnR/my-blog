@@ -1,3 +1,7 @@
+# My Short Demo Video of MyMVC Blog
+[![A Short MVC Demo Video](https://img.youtube.com/vi/63P_cNucS-E/0.jpg)](https://youtu.be/63P_cNucS-E)
+You can click on the image to play the video
+
 # Simple PHP MVC Blog
 
 A demonstration of **Model-View-Controller (MVC)** architecture in PHP, built to showcase clean code organization and modern web development practices.
