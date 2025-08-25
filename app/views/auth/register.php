@@ -7,7 +7,7 @@ require_once __DIR__ . '/../partials/header.php';
 renderHeader('Create Account');
 ?>
 
-<div class="container">
+<div class="auth-page">
     <?php echo FormHelper::displayErrors($errors ?? []); ?>
     
     <form method="POST" action="<?php echo UrlHelper::url('register'); ?>">

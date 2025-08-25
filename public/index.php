@@ -103,6 +103,14 @@ try {
 
     } elseif ($request === 'vote_ajax') {
         $blogController->voteAjax();
+
+    } elseif ($request === 'upload_image') {
+        // Handle image upload for EasyMDE
+        $blogController->uploadImage();
+
+    } elseif ($parts[0] === 'image' && isset($parts[1])) {
+        // Serve protected images
+        $blogController->serveImage($parts[1]);
         
     } else {
         // 404 - Page not found

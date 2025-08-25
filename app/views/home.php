@@ -6,7 +6,7 @@ require_once __DIR__ . '/../helpers/UrlHelper.php';
 renderHeader('Mini Reddit Clone', isset($_SESSION['user_id']), true);
 ?>
 
-<div class="container">
+<div class="main-page">
     
     <div class="posts">
         <?php if (!empty($posts)): ?>

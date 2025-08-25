@@ -8,7 +8,7 @@ require_once __DIR__ . '/../partials/header.php';
 renderHeader('Login');
 ?>
 
-<div class="container">
+<div class="auth-page">
     <h1>Login</h1>
     
     <?php 

@@ -1,0 +1,54 @@
+/* EasyMDE Dark Theme */
+.EasyMDEContainer .CodeMirror {
+  background-color: #2d2d2d !important;
+  color: #fff !important;
+}
+
+.EasyMDEContainer .editor-toolbar {
+  background-color: #1a1a1a !important;
+}
+
+.EasyMDEContainer .editor-toolbar a {
+  color: #fff !important;
+}
+
+.EasyMDEContainer .editor-toolbar a:hover,
+.editor-toolbar a:hover,
+.editor-toolbar button:hover {
+  background-color: transparent !important;
+  background: transparent !important;
+}
+
+.EasyMDEContainer .editor-toolbar .fa:hover,
+.editor-toolbar .fa:hover {
+  background-color: transparent !important;
+  background: transparent !important;
+}
+
+.EasyMDEContainer .editor-preview,
+.EasyMDEContainer .editor-preview-side {
+  background-color: #2d2d2d !important;
+  color: #fff !important;
+}
+
+.EasyMDEContainer .editor-statusbar {
+  background-color: #1a1a1a;
+  color: #ccc;
+  border-top: 1px solid #444;
+}
+
+/* Cursor visibility fix */
+.EasyMDEContainer .CodeMirror-cursor {
+  border-left: 2px solid #fff !important;
+  border-color: #fff !important;
+}
+
+/* Selected text background */
+.EasyMDEContainer .CodeMirror-selected {
+  background-color: #404040 !important;
+}
+
+/* Active line highlight */
+.EasyMDEContainer .CodeMirror-activeline-background {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}

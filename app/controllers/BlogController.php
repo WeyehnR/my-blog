@@ -263,5 +263,112 @@ class BlogController {
             echo json_encode(['success' => false, 'error' => 'Vote failed']);
         }
     }
+
+    // Image upload endpoint for EasyMDE
+    public function uploadImage() {
+        header('Content-Type: application/json');
+        
+        if (!isset($_SESSION['user_id'])) {
+            echo json_encode(['success' => false, 'error' => 'Login required']);
+            return;
+        }
+        
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode(['success' => false, 'error' => 'Invalid request method']);
+            return;
+        }
+        
+        if (!isset($_FILES['image'])) {
+            echo json_encode(['success' => false, 'error' => 'No image file provided']);
+            return;
+        }
+        
+        $file = $_FILES['image'];
+        
+        // Validation
+        $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+        $maxSize = 5 * 1024 * 1024; // 5MB
+        
+        if (!in_array($file['type'], $allowedTypes)) {
+            echo json_encode(['success' => false, 'error' => 'Invalid file type. Only JPG, PNG, GIF, and WebP allowed.']);
+            return;
+        }
+        
+        if ($file['size'] > $maxSize) {
+            echo json_encode(['success' => false, 'error' => 'File too large. Maximum size is 5MB.']);
+            return;
+        }
+        
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            echo json_encode(['success' => false, 'error' => 'Upload error occurred.']);
+            return;
+        }
+        
+        try {
+            // Create uploads directory OUTSIDE public folder for security
+            $uploadDir = __DIR__ . '/../../uploads/images/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            
+            // Generate unique filename
+            $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+            $filename = uniqid('img_' . time() . '_') . '.' . $extension;
+            $filepath = $uploadDir . $filename;
+            
+            // Move uploaded file
+            if (move_uploaded_file($file['tmp_name'], $filepath)) {
+                // Return URL that goes through PHP controller for access control
+                $imageUrl = '/my-blog/public/?url=image/' . $filename;
+                echo json_encode(['success' => true, 'url' => $imageUrl]);
+            } else {
+                echo json_encode(['success' => false, 'error' => 'Failed to save image']);
+            }
+            
+        } catch (Exception $e) {
+            error_log("Image upload error: " . $e->getMessage());
+            echo json_encode(['success' => false, 'error' => 'Server error occurred']);
+        }
+    }
+
+    // Secure image serving endpoint
+    public function serveImage($filename) {
+        // Basic security: only serve images if user is logged in
+        if (!isset($_SESSION['user_id'])) {
+            http_response_code(403);
+            echo 'Access denied';
+            return;
+        }
+
+        // Sanitize filename to prevent directory traversal attacks
+        $filename = basename($filename);
+        $imagePath = __DIR__ . '/../../uploads/images/' . $filename;
+        
+        // Check if file exists and is actually an image
+        if (!file_exists($imagePath)) {
+            http_response_code(404);
+            echo 'Image not found';
+            return;
+        }
+        
+        // Additional security: verify it's actually an image
+        $imageInfo = getimagesize($imagePath);
+        if ($imageInfo === false) {
+            http_response_code(403);
+            echo 'Invalid image file';
+            return;
+        }
+        
+        // Set appropriate headers
+        $mimeType = $imageInfo['mime'];
+        $fileSize = filesize($imagePath);
+        
+        header('Content-Type: ' . $mimeType);
+        header('Content-Length: ' . $fileSize);
+        header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
+        
+        // Serve the image
+        readfile($imagePath);
+    }
 }
 ?>

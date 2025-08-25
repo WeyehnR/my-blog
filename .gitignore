@@ -6,6 +6,8 @@
 .env.hostinger
 .env.example
 *.env
+favicon.ico
+tests
 
 # XAMPP/Development
 .DS_Store
@@ -50,6 +52,7 @@ uploads/
 storage/
 
 # Deployment and hosting specific files
+Hostinger-site
 hostinger-upload/
 *.htaccess
 .htaccess

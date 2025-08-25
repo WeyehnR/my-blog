@@ -1,41 +1,41 @@
 // AJAX voting functionality - Using event delegation
-document.addEventListener("DOMContentLoaded", function () {
-  // Use event delegation on both posts container and main container
-  const containers = document.querySelectorAll(".posts, .container");
+(function () {
+  // Prevent multiple initialization
+  if (window.votingInitialized) {
+    return;
+  }
+  window.votingInitialized = true;
 
-  containers.forEach((container) => {
-    if (container) {
-      container.addEventListener("click", function (e) {
-        // Check if clicked element is a vote button
-        const button = e.target;
+  // Use event delegation on the document body to capture all vote buttons
+  document.body.addEventListener("click", function (e) {
+    // Check if clicked element is a vote button
+    const button = e.target;
 
-        if (
-          button.classList.contains("vote-btn") &&
-          !button.classList.contains("disabled")
-        ) {
-          e.preventDefault();
-          e.stopPropagation();
+    if (
+      button.classList.contains("vote-btn") &&
+      !button.classList.contains("disabled")
+    ) {
+      e.preventDefault();
+      e.stopPropagation();
 
-          // Prevent multiple rapid clicks
-          if (button.classList.contains("processing")) {
-            return;
-          }
+      // Prevent multiple rapid clicks
+      if (button.classList.contains("processing")) {
+        return;
+      }
 
-          const postId = button.getAttribute("data-post-id");
-          const voteType = button.getAttribute("data-vote-type");
+      const postId = button.getAttribute("data-post-id");
+      const voteType = button.getAttribute("data-vote-type");
 
-          if (postId && voteType) {
-            // Mark as processing
-            button.classList.add("processing");
-            button.style.opacity = "0.6";
+      if (postId && voteType) {
+        // Mark as processing
+        button.classList.add("processing");
+        button.style.opacity = "0.6";
 
-            vote(postId, voteType, button);
-          }
-        }
-      });
+        vote(postId, voteType, button);
+      }
     }
   });
-});
+})();
 
 function vote(postId, type, clickedButton) {
   const xhr = new XMLHttpRequest();
@@ -83,11 +83,9 @@ function vote(postId, type, clickedButton) {
           } else if (response.redirect) {
             // User not logged in, redirect to login
             window.location.href = response.redirect;
-          } else {
-            console.error("Vote failed:", response.error);
           }
         } catch (e) {
-          console.error("Error parsing response:", e);
+          // Error parsing response
         }
       }
     }

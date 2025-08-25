@@ -6,7 +6,7 @@ require_once __DIR__ . '/partials/header.php';
 renderHeader(htmlspecialchars($post['title']), false, true);
 ?>
 
-<div class="container">
+<div class="post-page">
     <a href="<?php echo UrlHelper::url(''); ?>" class="back-link">← back to all posts</a>
     
     <div class="post-card" id="post-<?php echo $post['id']; ?>">

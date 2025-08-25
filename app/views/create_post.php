@@ -3,10 +3,12 @@ require_once __DIR__ . '/../helpers/FormHelper.php';
 require_once __DIR__ . '/../helpers/UrlHelper.php';
 require_once __DIR__ . '/partials/header.php';
 
-renderHeader('Create New Post');
+renderHeader('Create New Post', [
+    'easymde' => true // Flag to include EasyMDE assets
+]);
 ?>
 
-<div class="container">
+<div class="create-page">
     <!-- User bar -->
     <div class="user-bar">
         <?php if (isset($_SESSION['user_id'])): ?>
@@ -33,6 +35,7 @@ renderHeader('Create New Post');
         
         <div class="form-group">
             <label for="content">Post Content</label>
+            
             <textarea id="content" 
                      name="content" 
                      rows="8" 

@@ -64,7 +64,11 @@ header p {
   background-color: #0066b3 !important;
 }
 
-/* Container Styles */
+/* Container Styles - Applied to all page containers */
+.main-page,
+.post-page,
+.create-page,
+.auth-page,
 .container {
   max-width: none; /* Remove max-width restriction */
   width: 90%; /* Use 90% of screen width */
@@ -426,6 +430,10 @@ main {
     padding: 8px;
   }
 
+  .main-page,
+  .post-page,
+  .create-page,
+  .auth-page,
   .container {
     width: 98%;
     padding: 10px;
