@@ -63,6 +63,7 @@ prepare-hostinger.php
 HOSTINGER-*.md
 DEPLOYMENT-*.md
 HOSTING-GUIDE.md
+GITHUB-DEPLOYMENT.md
 
 # Server specific files
 .user.ini
