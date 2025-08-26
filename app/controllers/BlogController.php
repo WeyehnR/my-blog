@@ -1,13 +1,16 @@
 <?php
 // app/controllers/BlogController.php
 require_once __DIR__ . '/../models/Post.php';
+require_once __DIR__ . '/../models/Image.php';
 
 class BlogController {
     private $postModel;
+    private $imageModel;
     
     public function __construct() {
         // Model handles its own DB connection via singleton
         $this->postModel = new Post();
+        $this->imageModel = new Image();
     }
     
     // Display all posts
@@ -246,6 +249,18 @@ class BlogController {
         }
         
         try {
+            // Check if user is trying to vote on their own post
+            $post = $this->postModel->getPostById($post_id);
+            if (!$post) {
+                echo json_encode(['success' => false, 'error' => 'Post not found']);
+                return;
+            }
+            
+            if ($post['user_id'] == $user_id) {
+                echo json_encode(['success' => false, 'error' => 'You cannot vote on your own post']);
+                return;
+            }
+            
             // Perform the vote
             $this->postModel->vote($post_id, $user_id, $type);
             
@@ -268,39 +283,51 @@ class BlogController {
     public function uploadImage() {
         header('Content-Type: application/json');
         
+        // Debug logging
+        error_log("Upload request received - Method: " . $_SERVER['REQUEST_METHOD']);
+        error_log("Files available: " . print_r(array_keys($_FILES), true));
+        
         if (!isset($_SESSION['user_id'])) {
-            echo json_encode(['success' => false, 'error' => 'Login required']);
+            echo json_encode(['error' => 'noFileGiven']);
             return;
         }
         
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            echo json_encode(['success' => false, 'error' => 'Invalid request method']);
+            echo json_encode(['error' => 'noFileGiven']);
             return;
         }
         
-        if (!isset($_FILES['image'])) {
-            echo json_encode(['success' => false, 'error' => 'No image file provided']);
+        // Check for different possible field names that EasyMDE might use
+        $file = null;
+        if (isset($_FILES['image'])) {
+            $file = $_FILES['image'];
+        } elseif (isset($_FILES['file'])) {
+            $file = $_FILES['file'];
+        } elseif (isset($_FILES[0])) {
+            $file = $_FILES[0];
+        } else {
+            // No file found - debug what's actually being sent
+            error_log("Upload debug - Available files: " . print_r(array_keys($_FILES), true));
+            echo json_encode(['error' => 'noFileGiven']);
             return;
         }
-        
-        $file = $_FILES['image'];
         
         // Validation
         $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
         $maxSize = 5 * 1024 * 1024; // 5MB
         
         if (!in_array($file['type'], $allowedTypes)) {
-            echo json_encode(['success' => false, 'error' => 'Invalid file type. Only JPG, PNG, GIF, and WebP allowed.']);
+            echo json_encode(['error' => 'typeNotAllowed']);
             return;
         }
         
         if ($file['size'] > $maxSize) {
-            echo json_encode(['success' => false, 'error' => 'File too large. Maximum size is 5MB.']);
+            echo json_encode(['error' => 'fileTooLarge']);
             return;
         }
         
         if ($file['error'] !== UPLOAD_ERR_OK) {
-            echo json_encode(['success' => false, 'error' => 'Upload error occurred.']);
+            echo json_encode(['error' => 'importError']);
             return;
         }
         
@@ -311,28 +338,46 @@ class BlogController {
                 mkdir($uploadDir, 0755, true);
             }
             
-            // Generate unique filename
+            // Generate unique filename (internal use only)
             $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-            $filename = uniqid('img_' . time() . '_') . '.' . $extension;
-            $filepath = $uploadDir . $filename;
+            $storedFilename = uniqid('img_' . time() . '_') . '.' . $extension;
+            $filepath = $uploadDir . $storedFilename;
             
             // Move uploaded file
             if (move_uploaded_file($file['tmp_name'], $filepath)) {
-                // Return URL that goes through PHP controller for access control
-                $imageUrl = '/my-blog/public/?url=image/' . $filename;
-                echo json_encode(['success' => true, 'url' => $imageUrl]);
+                // Save to database and get UUID
+                $uuid = $this->imageModel->create(
+                    $_SESSION['user_id'],
+                    $file['name'], // original filename
+                    $storedFilename, // stored filename
+                    $filepath, // full file path
+                    $file['size'], // file size
+                    $file['type'] // mime type
+                );
+                
+                if ($uuid) {
+                    // Return full image URL instead of just UUID for EasyMDE compatibility
+                    $imageUrl = '/my-blog/public/?url=image/' . $uuid;
+                    $response = ['data' => ['filePath' => $imageUrl]];
+                    error_log("Upload successful, responding with: " . json_encode($response));
+                    echo json_encode($response);
+                } else {
+                    error_log("Database save failed");
+                    echo json_encode(['error' => 'importError']);
+                }
             } else {
-                echo json_encode(['success' => false, 'error' => 'Failed to save image']);
+                error_log("File move failed");
+                echo json_encode(['error' => 'importError']);
             }
             
         } catch (Exception $e) {
             error_log("Image upload error: " . $e->getMessage());
-            echo json_encode(['success' => false, 'error' => 'Server error occurred']);
+            echo json_encode(['error' => 'importError']);
         }
     }
 
     // Secure image serving endpoint
-    public function serveImage($filename) {
+    public function serveImage($uuid) {
         // Basic security: only serve images if user is logged in
         if (!isset($_SESSION['user_id'])) {
             http_response_code(403);
@@ -340,35 +385,44 @@ class BlogController {
             return;
         }
 
-        // Sanitize filename to prevent directory traversal attacks
-        $filename = basename($filename);
-        $imagePath = __DIR__ . '/../../uploads/images/' . $filename;
+        // Validate UUID format to prevent injection attacks
+        if (!preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $uuid)) {
+            http_response_code(400);
+            echo 'Invalid image ID';
+            return;
+        }
         
-        // Check if file exists and is actually an image
-        if (!file_exists($imagePath)) {
+        // Get image metadata from database
+        $image = $this->imageModel->getByUUID($uuid);
+        
+        if (!$image) {
             http_response_code(404);
             echo 'Image not found';
             return;
         }
         
-        // Additional security: verify it's actually an image
-        $imageInfo = getimagesize($imagePath);
-        if ($imageInfo === false) {
-            http_response_code(403);
-            echo 'Invalid image file';
+        // Additional access control: only owner can view (optional)
+        // if ($image['user_id'] != $_SESSION['user_id']) {
+        //     http_response_code(403);
+        //     echo 'Access denied';
+        //     return;
+        // }
+        
+        // Check if file exists
+        if (!file_exists($image['file_path'])) {
+            http_response_code(404);
+            echo 'Image file not found';
             return;
         }
         
         // Set appropriate headers
-        $mimeType = $imageInfo['mime'];
-        $fileSize = filesize($imagePath);
-        
-        header('Content-Type: ' . $mimeType);
-        header('Content-Length: ' . $fileSize);
+        header('Content-Type: ' . $image['mime_type']);
+        header('Content-Length: ' . $image['file_size']);
         header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
+        header('X-Content-Type-Options: nosniff'); // Security header
         
         // Serve the image
-        readfile($imagePath);
+        readfile($image['file_path']);
     }
 }
 ?>

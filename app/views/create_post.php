@@ -9,21 +9,10 @@ renderHeader('Create New Post', [
 ?>
 
 <div class="create-page">
-    <!-- User bar -->
-    <div class="user-bar">
-        <?php if (isset($_SESSION['user_id'])): ?>
-            <span>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</span>
-            <a href="<?php echo UrlHelper::url('logout'); ?>" class="logout-btn">Logout</a>
-        <?php else: ?>
-            <a href="<?php echo UrlHelper::url('login'); ?>">Login</a> |
-            <a href="<?php echo UrlHelper::url('register'); ?>">Register</a>
-        <?php endif; ?>
-    </div>
 
-    
     <?php echo FormHelper::displayErrors($errors ?? []); ?>
     
-    <form method="POST" action="<?php echo UrlHelper::url('store'); ?>">
+    <form method="POST" action="<?php echo UrlHelper::url('store'); ?>" enctype="multipart/form-data">
         <div class="form-group">
             <label for="title">Post Title</label>
             <input type="text" 
@@ -38,8 +27,7 @@ renderHeader('Create New Post', [
             
             <textarea id="content" 
                      name="content" 
-                     rows="8" 
-                     required><?php echo FormHelper::oldValue('content'); ?></textarea>
+                     rows="8"><?php echo FormHelper::oldValue('content'); ?></textarea>
         </div>
         
         <button type="submit" class="btn">Submit Post</button>

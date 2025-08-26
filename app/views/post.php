@@ -1,9 +1,13 @@
 <?php
 require_once __DIR__ . '/../helpers/FormHelper.php';
 require_once __DIR__ . '/../helpers/UrlHelper.php';
+require_once __DIR__ . '/../helpers/MarkdownHelper.php';
 require_once __DIR__ . '/partials/header.php';
 
-renderHeader(htmlspecialchars($post['title']), false, true);
+renderHeader(htmlspecialchars($post['title']), [
+    'showCreateButton' => false, 
+    'includeVoting' => true
+]);
 ?>
 
 <div class="post-page">
@@ -11,26 +15,26 @@ renderHeader(htmlspecialchars($post['title']), false, true);
     
     <div class="post-card" id="post-<?php echo $post['id']; ?>">
         <div class="vote-section">
-            <?php if (isset($_SESSION['user_id'])): ?>
+            <?php if (isset($_SESSION['user_id']) && (int)$_SESSION['user_id'] != (int)$post['user_id']): ?>
                 <button class="vote-btn upvote" 
                         data-post-id="<?php echo $post['id']; ?>" 
                         data-vote-type="up"
                         title="Upvote"
                         <?php echo ($post['userVote'] ?? '') === 'up' ? 'style="color:#ff4500;"' : ''; ?>>▲</button>
             <?php else: ?>
-                <span class="vote-btn disabled">▲</span>
+                <span class="vote-btn disabled" title="<?php echo isset($_SESSION['user_id']) && (int)$_SESSION['user_id'] == (int)$post['user_id'] ? 'Cannot vote on your own post' : 'Login to vote'; ?>">▲</span>
             <?php endif; ?>
             
             <span class="vote-score"><?php echo $post['vote_score'] ?? 0; ?></span>
             
-            <?php if (isset($_SESSION['user_id'])): ?>
+            <?php if (isset($_SESSION['user_id']) && (int)$_SESSION['user_id'] != (int)$post['user_id']): ?>
                 <button class="vote-btn downvote" 
                         data-post-id="<?php echo $post['id']; ?>" 
                         data-vote-type="down"
                         title="Downvote"
                         <?php echo ($post['userVote'] ?? '') === 'down' ? 'style="color:#7193ff;"' : ''; ?>>▼</button>
             <?php else: ?>
-                <span class="vote-btn disabled">▼</span>
+                <span class="vote-btn disabled" title="<?php echo isset($_SESSION['user_id']) && (int)$_SESSION['user_id'] == (int)$post['user_id'] ? 'Cannot vote on your own post' : 'Login to vote'; ?>">▼</span>
             <?php endif; ?>
         </div>
         
@@ -39,7 +43,7 @@ renderHeader(htmlspecialchars($post['title']), false, true);
             <p class="post-meta">Posted on <?php echo date('F j, Y', strtotime($post['created_at'])); ?> by <?php echo htmlspecialchars($post['username']); ?></p>
             
             <div class="post-content-full">
-                <p><?php echo nl2br(htmlspecialchars($post['content'])); ?></p>
+                <?php echo MarkdownHelper::toHtml($post['content']); ?>
             </div>
         </div>
     </div>

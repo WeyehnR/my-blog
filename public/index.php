@@ -109,7 +109,7 @@ try {
         $blogController->uploadImage();
 
     } elseif ($parts[0] === 'image' && isset($parts[1])) {
-        // Serve protected images
+        // Serve protected images using UUID
         $blogController->serveImage($parts[1]);
         
     } else {

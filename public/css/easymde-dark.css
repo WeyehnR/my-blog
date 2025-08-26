@@ -1,54 +1,65 @@
 /* EasyMDE Dark Theme */
-.EasyMDEContainer .CodeMirror {
-  background-color: #2d2d2d !important;
+.CodeMirror {
+  position: relative;
+  overflow: hidden;
+  background: #242424 !important;
   color: #fff !important;
+  direction: ltr;
 }
 
-.EasyMDEContainer .editor-toolbar {
-  background-color: #1a1a1a !important;
+.CodeMirror-cursor {
+  border-left: 1px solid #fff !important;
 }
 
-.EasyMDEContainer .editor-toolbar a {
-  color: #fff !important;
+.CodeMirror-selected {
+  background: #444 !important;
 }
 
-.EasyMDEContainer .editor-toolbar a:hover,
+/* Toolbar styling */
+.editor-toolbar {
+  background: #1e1e1e !important;
+  border-color: #444 !important;
+}
+
+.editor-toolbar a {
+  color: #ccc !important;
+}
+
 .editor-toolbar a:hover,
-.editor-toolbar button:hover {
-  background-color: transparent !important;
-  background: transparent !important;
-}
-
-.EasyMDEContainer .editor-toolbar .fa:hover,
-.editor-toolbar .fa:hover {
-  background-color: transparent !important;
-  background: transparent !important;
-}
-
-.EasyMDEContainer .editor-preview,
-.EasyMDEContainer .editor-preview-side {
-  background-color: #2d2d2d !important;
+.editor-toolbar button:hover,
+.editor-toolbar button.active {
+  background: #333 !important;
+  border-color: #555 !important;
   color: #fff !important;
 }
 
-.EasyMDEContainer .editor-statusbar {
-  background-color: #1a1a1a;
-  color: #ccc;
-  border-top: 1px solid #444;
+/* Ensure FontAwesome icons are visible on hover */
+.editor-toolbar a:hover:before,
+.editor-toolbar button:hover:before,
+.editor-toolbar button.active:before {
+  color: #fff !important;
 }
 
-/* Cursor visibility fix */
-.EasyMDEContainer .CodeMirror-cursor {
-  border-left: 2px solid #fff !important;
-  border-color: #fff !important;
+/* Override specific button hover states */
+.editor-toolbar a:hover,
+.editor-toolbar .fa:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #fff !important;
 }
 
-/* Selected text background */
-.EasyMDEContainer .CodeMirror-selected {
-  background-color: #404040 !important;
+/* Active button state */
+.editor-toolbar button.active {
+  background: #444 !important;
+  border-color: #666 !important;
+  color: #fff !important;
 }
 
-/* Active line highlight */
-.EasyMDEContainer .CodeMirror-activeline-background {
-  background-color: rgba(255, 255, 255, 0.1) !important;
+/* Reduce font loading issues */
+.fa {
+  font-display: swap;
+}
+
+.editor-preview {
+	padding: 10px;
+	background: #242424 !important;
 }
