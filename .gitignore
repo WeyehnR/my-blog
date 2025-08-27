@@ -71,3 +71,9 @@ GITHUB-DEPLOYMENT.md
 # Server specific files
 .user.ini
 php.ini
+
+debug_voting.php
+easymde.min.js
+debug-easymde.php
+debug-urls.php
+easymde.min.js
